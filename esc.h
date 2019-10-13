@@ -65,9 +65,10 @@ int esc::already_in_frame(int page) {
 	return -1;
 }
 void esc::change_victim_page(int page) {
-	double update_pro=0.5;
-	vector<int> rbitdbit[4];
-
+	double update_pro=0.2;
+	bool flag=false;
+	//vector<int> rbitdbit[4];
+	/*
 	for (int i = 0; i < frame.size(); i++){
 		if (rbit[i] == 0 && dbit[i] == 0)
 			rbitdbit[0].push_back(i);
@@ -78,34 +79,52 @@ void esc::change_victim_page(int page) {
 		else		
 			rbitdbit[3].push_back(i);
 	}
+	*/
+	for(int i=0;i<2;i++){
+		for(int j=0;j<frame.size();j++)
+			if(rbit[j]==0&&dbit[j]==0){
+				rbit.erase(rbit.begin()+j);
+				dbit.erase(dbit.begin()+j);
+				frame.erase(frame.begin()+j);
+				frame.push_back(page);
+				rbit.push_back(0);
+				double r=(double)rand()/RAND_MAX;
+				if(r<update_pro)
+					dbit.push_back(1);
+				else
+					dbit.push_back(0);
+				flag = ~flag;
+				break;
+			}
 
-
-	for (int i = 0; i < 4; i++)
-	{
-		if (rbitdbit[i].size() > 0)
-		{	
-			rbit.erase(rbit.begin()+rbitdbit[i][0]);
-			dbit.erase(dbit.begin()+rbitdbit[i][0]);
-			frame.erase(frame.begin()+rbitdbit[i][0]);
-			
-			frame.push_back(page);
-			rbit.push_back(0);
-			
-			double r = (double)rand() / RAND_MAX;
-			if (r < update_pro)
-				dbit.push_back(1);
-			else
-				dbit.push_back(0);	
+		if(flag)
 			break;
-		}
-		
+		for (int j = 0; j < frame.size(); j++)
+			if(rbit[j]==0&&dbit[j]==1){
+				rbit.erase(rbit.begin()+j);
+				dbit.erase(dbit.begin()+j);
+				frame.erase(frame.begin()+j);
+				frame.push_back(page);
+				rbit.push_back(0);
+				double r=(double)rand()/RAND_MAX;
+				if(r<update_pro)
+					dbit.push_back(1);
+				else
+					dbit.push_back(0);
+				flag = ~flag;
+				break;
+			}
+			else
+				rbit[j]=0;
+		if(flag)
+			break;
 	}
-
+	
 }
 
 void esc::run()
 {
-	double update_pro=0.5;
+	double update_pro=0.2;
 	int tmp;
 	ofstream rand_file("esc_rand.txt");
 	ofstream locality_file("esc_locality.txt");

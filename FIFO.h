@@ -31,7 +31,6 @@ private:
 
 FIFO::FIFO() {
 	srand(time(NULL));
-	num_frame = 10;
 	times = 100000;
 	page_fault1 = vector<int>(10, 0);
 	page_fault2 = vector<int>(10, 0);

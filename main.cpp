@@ -2,6 +2,10 @@
 #include"FIFO.h"
 #include"op.h"
 #include"esc.h"
+#include"lru.h"
+#include"lru2.h"
+#include"sc.h"
+#include"lfu.h"
 using namespace std;
 	
 void random_string() {
@@ -26,7 +30,7 @@ void locality_string2() {
 		locality_num = 500 / rate;
 		start_num = rand() % 500;
 
-		num_func_calls = rand() % 1000 + 5000;
+		num_func_calls = rand() % 2 + 1000;
 		for (int i = 0; i < num_func_calls; i++) {
 			random_num = (rand() % locality_num+start_num)%500+1;
 			output << random_num << " ";
@@ -43,13 +47,21 @@ int main() {
 	locality_string2();
 	FIFO fifo;
 	op optimal;
-	esc es;
+	lru2 lrur2;
+	sc scr;
+	lfu lfur;
+	//esc es;
 	cout << "FIFO Algo:" << endl<<endl;
 	fifo.run();
-	cout << endl<<"Optimal Algo:" << endl<<endl;
-	optimal.run();
-	cout << endl << "ESC Algo:" << endl << endl;
-	es.run();
-
+	//cout << endl<<"Optimal Algo:" << endl<<endl;
+	//optimal.run();
+	//cout << endl << "ESC Algo:" << endl << endl;
+	//es.run();
+	cout << endl<< "lru2 Algo:" << endl<< endl;
+	lrur2.run();
+	cout << endl<< "sc Algo:" << endl<< endl;
+	scr.run();
+	cout << endl<< "LFU Algo:" << endl<< endl;
+	lfur.run();
 	return 0;
 }
