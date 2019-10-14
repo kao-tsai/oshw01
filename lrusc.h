@@ -18,7 +18,7 @@ private:
 	void random_string1();
 	void locality_string2();
 	int already_in_frame(int);
-	void change_victim_page(int,int);
+	void change_victim_page(int);
 private:
 	int num_frame;
 	vector<int> reference_string;
@@ -26,7 +26,6 @@ private:
 	vector<int> page_fault1;
 	vector<int> page_fault2;
 	vector<int> frame;
-	vector<int> last_time;
     vector<int> rbit;
 };
 
@@ -57,7 +56,7 @@ void lrusc::locality_string2() {
 		input >> reference_string[i];
 
 	input.close();
-}
+}last
 
 int lrusc::already_in_frame(int page) {
 	for (int i = 0; i < frame.size(); i++)
@@ -66,26 +65,25 @@ int lrusc::already_in_frame(int page) {
 		
 	return -1;
 }
-void lrusc::change_victim_page(int page,int last) {
-	int min = last_time[0], victim_position=0;
-	for (int i = 0; i < last_time.size(); i++)
-	{
-		if (last_time[i] < min)
-		{
-			min = last_time[i];
-			victim_position = i;
+void lrusc::change_victim_page(int page) {
+	for(int i=0;i<frame.size();i=(i+1)%frame.size()){
+		if(rbit[i]==0){
+				frame.erase(frame.begin()+i);
+				rbit.erase(rbit.begin()+i);
+				frame.push_back(page);
+				rbit.push_back(0);
+				break;
 		}
+		else
+				rbit[i]=0;
 	}
-	frame[victim_position] = page;
-
-	last_time[victim_position] = last;
 }
 
 void lrusc::run()
 {
 	int tmp;
-	ofstream rand_file("lrusc_rand.txt");
-	ofstream locality_file("lrusc_locality.txt");
+	ofstream rand_file("random_result/lrusc_rand.txt");
+	ofstream locality_file("locality_result/lrusc_locality.txt");
 	
 	//run each 
 	for (int k = 0; k < 2; k++)
@@ -113,7 +111,7 @@ void lrusc::run()
 				locality_file<<num_frame<<" ";
 
 			frame.resize(0);
-			last_time.resize(0);
+			rbit.resize(0);
 			//input page
 			for (int j = 0; j < times; j++) {
 				//check whether page already in frame
@@ -121,10 +119,10 @@ void lrusc::run()
 
 					//check whether frames are filled
 					if (frame.size() == num_frame)
-						change_victim_page(reference_string[j], j);
+						change_victim_page(reference_string[j]);
 					else {
 						frame.push_back(reference_string[j]);
-						last_time.push_back(j);
+						rbit.push_back(0);
 					}
 					//increase page fault
 					switch (k) {
@@ -136,9 +134,12 @@ void lrusc::run()
 					}
 
 				}			
-				else
-					last_time[tmp] = j;			
-				
+				else{
+						frame.erase(frame.begin()+tmp);
+						frame.push_back(reference_string[j]);
+						rbit.erase(rbit.begin()+tmp);
+						rbit.push_back(1);
+				}
 			}
 			switch (k) {
 			case 0:
