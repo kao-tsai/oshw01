@@ -65,8 +65,8 @@ bool FIFO::already_in_frame(int page) {
 
 void FIFO::run()
 {
-	ofstream rand_file("fifo_rand.txt");
-	ofstream locality_file("fifo_locality.txt");
+	ofstream rand_file("random_result/fifo_rand.txt");
+	ofstream locality_file("locality_result/fifo_locality.txt");
 	for (int k = 0; k < 2; k++){
 		switch (k) {
 			case 0:

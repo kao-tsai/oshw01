@@ -26,7 +26,6 @@ private:
 	vector<int> page_fault1;
 	vector<int> page_fault2;
 	vector<int> frame;
-	vector<int>last_time;
 };
 
 
@@ -73,8 +72,8 @@ void lru2::change_victim_page(int page) {
 void lru2::run()
 {
 	int tmp;
-	ofstream rand_file("lru_rand.txt");
-	ofstream locality_file("lru_locality.txt");
+	ofstream rand_file("random_result/lru_rand.txt");
+	ofstream locality_file("locality_result/lru_locality.txt");
 	
 	//run each 
 	for (int k = 0; k < 2; k++)
@@ -102,7 +101,6 @@ void lru2::run()
 				locality_file<<num_frame<<" ";
 
 			frame.resize(0);
-			last_time.resize(0);
 			//input page
 			for (int j = 0; j < times; j++) {
 				//check whether page already in frame
@@ -111,10 +109,10 @@ void lru2::run()
 					//check whether frames are filled
 					if (frame.size() == num_frame)
 						change_victim_page(reference_string[j]);
-					else {
+					else 
 						frame.push_back(reference_string[j]);
 						
-					}
+					
 					//increase page fault
 					switch (k) {
 					case 0:

@@ -56,7 +56,7 @@ void lrusc::locality_string2() {
 		input >> reference_string[i];
 
 	input.close();
-}last
+}
 
 int lrusc::already_in_frame(int page) {
 	for (int i = 0; i < frame.size(); i++)
@@ -71,7 +71,7 @@ void lrusc::change_victim_page(int page) {
 				frame.erase(frame.begin()+i);
 				rbit.erase(rbit.begin()+i);
 				frame.push_back(page);
-				rbit.push_back(0);
+				rbit.push_back(1);
 				break;
 		}
 		else
@@ -122,7 +122,7 @@ void lrusc::run()
 						change_victim_page(reference_string[j]);
 					else {
 						frame.push_back(reference_string[j]);
-						rbit.push_back(0);
+						rbit.push_back(1);
 					}
 					//increase page fault
 					switch (k) {

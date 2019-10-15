@@ -104,8 +104,8 @@ void op::change_victim_page(int page,int next) {
 void op::run()
 {
 	int count = 0, tmp,next;
-	ofstream rand_file("opt_rand.txt");
-	ofstream locality_file("opt_locality.txt");
+	ofstream rand_file("random_result/opt_rand.txt");
+	ofstream locality_file("locality_result/opt_locality.txt");
 	
 	//run each 
 	for (int k = 0; k < 2; k++)
