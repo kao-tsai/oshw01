@@ -17,6 +17,7 @@ public:
 private:
 	void random_string1();
 	void locality_string2();
+	void bubble_sort_string3();
 	int already_in_frame(int);
 	void change_victim_page(int, int);
 	int update_next_time(int, int);
@@ -26,6 +27,7 @@ private:
 	int times;
 	vector<int> page_fault1;
 	vector<int> page_fault2;
+	vector<int> page_fault3;
 	vector<int> frame;
 	vector<int>next_time;
 };
@@ -37,7 +39,7 @@ op::op() {
 	times = 100000;
 	page_fault1 = vector<int>(10, 0);
 	page_fault2 = vector<int>(10, 0);
-
+	page_fault3 = vector<int>(10, 0);
 }
 
 void op::random_string1() {
@@ -59,6 +61,14 @@ void op::locality_string2() {
 
 	input.close();
 }
+void op::bubble_sort_string3() {
+	reference_string.resize(times);
+	ifstream input("bubble_sort_string.txt");
+
+	for (int i = 0; i < times; i++)
+		input >> reference_string[i];
+	input.close();
+}
 
 int op::already_in_frame(int page) {
 	for (int i = 0; i < frame.size(); i++)
@@ -69,8 +79,7 @@ int op::already_in_frame(int page) {
 }
 int op::update_next_time(int page,int next) {
 	int next_position=times-1;
-	for (int i = next + 1; i < times; i++)
-	{
+	for (int i = next + 1; i < times; i++){
 		if (reference_string[i] == page)
 		{
 			next_position = i;
@@ -83,19 +92,17 @@ int op::update_next_time(int page,int next) {
 		}
 	}
 
-
 	return next_position;
 }
+
 void op::change_victim_page(int page,int next) {
 	int max = 0, victim_position,tmp;
 	for (int i = 0; i < next_time.size(); i++)
-	{
-		if (next_time[i] > max)
-		{
+		if (next_time[i] > max){
 			max = next_time[i];
 			victim_position = i;
 		}
-	}
+	
 	frame[victim_position] = page;
 	tmp=update_next_time(page,next);
 	next_time[victim_position] = tmp;
@@ -106,20 +113,24 @@ void op::run()
 	int count = 0, tmp,next;
 	ofstream rand_file("random_result/opt_rand.txt");
 	ofstream locality_file("locality_result/opt_locality.txt");
-	
-	//run each 
-	for (int k = 0; k < 2; k++)
+	ofstream bubble_sort_file("bubble_sort_result/opt_bubble_sort.txt");
+
+	//run each type of string
+	for (int k = 0; k < 3; k++)
 	{
-		//input random,locality,
+		//input random,locality,bubble_sort string
 		switch (k) {
 		case 0:
 			random_string1();
 			cout << "Random string:" << endl;
-
 			break;
 		case 1:
 			cout << "Locality string:" << endl;
 			locality_string2();
+			break;
+		case 2:
+			cout<<"Bubble sort string:"<<endl;
+			bubble_sort_string3();
 			
 		}
 		//run 10,20,30........,100 frames
@@ -131,7 +142,11 @@ void op::run()
 				rand_file<<num_frame<<" ";
 			else if(k==1)
 				locality_file<<num_frame<<" ";
-
+			else
+				bubble_sort_file<<num_frame<<" ";
+				
+			
+			
 			frame.resize(0);
 			next_time.resize(0);
 			//input page
@@ -149,11 +164,14 @@ void op::run()
 					}
 					//increase page fault
 					switch (k) {
-					case 0:
-						page_fault1[i]++;
-						break;
-					case 1:
-						page_fault2[i]++;
+						case 0:
+							page_fault1[i]++;
+							break;
+						case 1:
+							page_fault2[i]++;
+							break;
+						case 2:
+							page_fault3[i]++;
 					}
 
 				}			
@@ -172,6 +190,10 @@ void op::run()
 			case 1:
 				cout << "Frame size:" << num_frame << ": " << page_fault2[i] << endl;
 				locality_file<<page_fault2[i]<<endl;
+				break;
+			case 2:
+				cout << "Frame size:" << num_frame << ": " << page_fault3[i] << endl;
+				bubble_sort_file<<page_fault3[i]<<endl;
 			}
 
 		}
@@ -180,5 +202,6 @@ void op::run()
 
 rand_file.close();
 locality_file.close();
+bubble_sort_file.close();
 }
 #endif

@@ -17,6 +17,7 @@ public:
 private:
 	void random_string1();
 	void locality_string2();
+	void bubble_sort_string3();
 	int already_in_frame(int);
 	void change_victim_page(int);
 private:
@@ -25,6 +26,7 @@ private:
 	int times;
 	vector<int> page_fault1;
 	vector<int> page_fault2;
+	vector<int> page_fault3;
 	vector<int>frame;
 	vector<int>rbit;
 	vector<int>dbit;
@@ -37,6 +39,7 @@ esc::esc() {
 	times = 100000;
 	page_fault1 = vector<int>(10, 0);
 	page_fault2 = vector<int>(10, 0);
+	page_fault3 = vector<int>(10, 0);
 }
 void esc::random_string1() {
 	reference_string.resize(times);
@@ -54,6 +57,15 @@ void esc::locality_string2() {
 	for (int i = 0; i < times; i++)
 		input >> reference_string[i];
 
+	input.close();
+}
+
+void esc::bubble_sort_string3() {
+	reference_string.resize(times);
+	ifstream input("bubble_sort_string.txt");
+
+	for (int i = 0; i < times; i++)
+		input >> reference_string[i];
 	input.close();
 }
 
@@ -128,8 +140,8 @@ void esc::run()
 	int tmp;
 	ofstream rand_file("random_result/esc_rand.txt");
 	ofstream locality_file("locality_result/esc_locality.txt");
-
-	for (int k = 0; k < 2; k++) {
+	ofstream bubble_sort_file("bubble_sort_result/esc_bubble_sort.txt");
+	for (int k = 0; k < 3; k++) {
 		switch (k) {
 		case 0:
 		    cout << "Random string:" << endl;
@@ -138,6 +150,11 @@ void esc::run()
 		case 1:
 			cout << "Locality string:" << endl;
 			locality_string2();
+			break;
+		case 2:
+			cout<<"Bubble sort string:"<<endl;
+			bubble_sort_string3();
+			
 	
 		}
 
@@ -149,7 +166,11 @@ void esc::run()
 				rand_file<<num_frame<<" ";
 			else if(k==1)
 				locality_file<<num_frame<<" ";
+			else
+				bubble_sort_file<<num_frame<<" ";
 
+			
+			
 			frame.clear();
 			for (int j = 0; j < times; j++) {
 				
@@ -175,6 +196,9 @@ void esc::run()
 							break;
 						case 1:
 							page_fault2[i]++;
+							break;
+						case 2:
+							page_fault3[i]++;
 
 					}
 
@@ -196,11 +220,15 @@ void esc::run()
 			case 1:
 				cout << "Frame size:" << num_frame << ": " << page_fault2[i] << endl;
 				locality_file<<page_fault2[i]<<endl;
+				break;
+			case 2:
+				cout << "Frame size:" << num_frame << ": " << page_fault3[i] << endl;
+				bubble_sort_file<<page_fault3[i]<<endl;
 			}
 		}
 	}
 rand_file.close();
 locality_file.close();
-
+bubble_sort_file.close();
 }
 #endif

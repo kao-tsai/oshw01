@@ -71,7 +71,7 @@ int lfu::already_in_frame(int page) {
 
 void lfu::aging(){
 	for (int i = 0; i < count.size();i++)
-		count[i]=count[i] /4;
+		count[i]=count[i] /2;
 }
 void lfu::change_victim_page(int page) {
 	int min = count[0], victim_position=0;
@@ -92,8 +92,8 @@ void lfu::change_victim_page(int page) {
 void lfu::run()
 {
 	int tmp;
-	ofstream rand_file("lfu_rand.txt");
-	ofstream locality_file("lfu_locality.txt");
+	ofstream rand_file("random_result/lfu_rand.txt");
+	ofstream locality_file("locality_result/lfu_locality.txt");
 	
 	//run each 
 	for (int k = 0; k < 2; k++)
@@ -145,9 +145,9 @@ void lfu::run()
 
 				}			
 				else
-                    count[tmp]++;
+                    count[tmp]+=2;
                     
-                if(j%100==0)
+                if(j%10==0)
 					aging();
 				
 				

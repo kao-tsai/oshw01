@@ -21,6 +21,30 @@ void random_string() {
 	}
 	output.close();
 } 
+/*
+void locality_string2() {
+	ofstream output("locality_string.txt");
+	int times = 100000;
+	int locality_num, start_num,count=0,tmp;
+
+
+	while (count < times) {
+
+		locality_num = rand()%26+25;
+		start_num = rand() % 500;
+
+		for(int i=0;i<locality_num;i++){
+				tmp=start_num+i;
+				if(tmp>500)
+					output<<tmp%500<<" ";
+				else
+					output<<tmp<<" ";
+		}
+		
+		count+=locality_num;
+	}
+	output.close();
+}*/
 void locality_string2() {
 	ofstream output("locality_string.txt");
 	int times = 100000;
@@ -33,8 +57,11 @@ void locality_string2() {
 
 		num_func_calls = rand() % 2 + 50;
 		for (int i = 0; i < num_func_calls; i++) {
-			random_num = (rand() % locality_num+start_num)%500+1;
-			output << random_num << " ";
+			random_num = rand() % locality_num+start_num;
+			if(random_num>500)
+				output<<random_num%500<<" ";
+			else
+				output << random_num << " ";
 			count++;
 		}
 		
@@ -42,10 +69,31 @@ void locality_string2() {
 	output.close();
 
 }
+
+void bubble_sort_string(){
+	ofstream output("bubble_sort_string.txt");
+	int sort_size,count=0,times=100000,start_num;
+	while(count<times){
+		sort_size=rand()%30+10;
+		start_num=rand()%500+1;
+		for(int i=0;i<sort_size-1;i++){
+				for(int j=i;j<sort_size-1;j++){
+						if(start_num>500)
+								output <<(start_num+j)%500<<" "<<(start_num+j+1)%500<<" ";
+						else
+								output <<start_num+j<<" "<<start_num+j+1<<" ";
+						count+=2;
+				}
+		}
+	}
+	output.close();
+}
+
 int main() {
 	
 	random_string();
 	locality_string2();
+	bubble_sort_string();
 	FIFO fifo;
 	op optimal;
 	lru2 lrur2;
@@ -59,8 +107,8 @@ int main() {
 	optimal.run();
 	cout << endl << "ESC Algo:" << endl << endl;
 	es.run();
-	cout << endl<< "lru2 Algo:" << endl<< endl;
-	lrur2.run();
+	//cout << endl<< "lru2 Algo:" << endl<< endl;
+	//lrur2.run();
 	//cout << endl<< "sc Algo:" << endl<< endl;
 	//scr.run();
 	//cout << endl<< "LFU Algo:" << endl<< endl;
