@@ -7,4 +7,4 @@ main.o:	main.cpp
 dep:
 						echo "Do nothing"
 clean:
-						rm	-f	main*.o
+						rm	-f	main.o

@@ -17,27 +17,31 @@ public:
 private:
 	void random_string1();
 	void locality_string2();
-	void bubble_sort_string3();
+	void my_ref_string3();
 	int already_in_frame(int);
-	void change_victim_page(int);
+	void change_victim_page(int,int);
 private:
 	int num_frame;
 	vector<int> reference_string;
 	int times;
-	vector<int> page_fault1;
-	vector<int> page_fault2;
-	vector<int> page_fault3;
+	double update_pro;
+	vector<int> page_fault;
+	vector<int> interrupt;
+	vector<int> diskIO;
 	vector<int> frame;
     vector<int> rbit;
+	vector<int> dbit;
 };
 
 
 lrusc::lrusc() {
 	srand(time(NULL));
 	times = 100000;
-	page_fault1 = vector<int>(10, 0);
-	page_fault2 = vector<int>(10, 0);
-	page_fault3 = vector<int>(10, 0);
+	update_pro=0.3;
+	page_fault = vector<int>(10, 0);
+	interrupt = vector<int>(10, 0);
+	diskIO = vector<int>(10, 0);
+	dbit=vector<int>(10,0);
 }
 
 void lrusc::random_string1() {
@@ -45,7 +49,7 @@ void lrusc::random_string1() {
 	ifstream input("random_string.txt");
 
 	for (int i = 0; i < times; i++)
-		input >> reference_string[i];	
+		input >> reference_string[i];
 
 	input.close();
 
@@ -59,9 +63,9 @@ void lrusc::locality_string2() {
 
 	input.close();
 }
-void lrusc::bubble_sort_string3() {
+void lrusc::my_ref_string3() {
 	reference_string.resize(times);
-	ifstream input("bubble_sort_string.txt");
+	ifstream input("my_ref_string.txt");
 
 	for (int i = 0; i < times; i++)
 		input >> reference_string[i];
@@ -76,13 +80,24 @@ int lrusc::already_in_frame(int page) {
 		
 	return -1;
 }
-void lrusc::change_victim_page(int page) {
+void lrusc::change_victim_page(int page,int current_page_num) {
 	for(int i=0;i<frame.size();i=(i+1)%frame.size()){
 		if(rbit[i]==0){
 				frame.erase(frame.begin()+i);
 				rbit.erase(rbit.begin()+i);
 				frame.push_back(page);
 				rbit.push_back(0);
+
+				if(dbit[i]==1)
+					diskIO[current_page_num]++;
+
+				dbit.erase(dbit.begin()+i);
+				double r = (double)rand() / RAND_MAX;
+				if (r < update_pro)
+					dbit.push_back(1);
+				else
+					dbit.push_back(0);
+					
 				break;
 		}
 		else
@@ -93,9 +108,18 @@ void lrusc::change_victim_page(int page) {
 void lrusc::run()
 {
 	int tmp;
-	ofstream rand_file("random_result/lrusc_rand.txt");
-	ofstream locality_file("locality_result/lrusc_locality.txt");
-	ofstream bubble_sort_file("bubble_sort_result/lrusc_bubble_sort.txt");
+	ofstream rand_file("plot/random_result/lrusc_rand.txt");
+	ofstream locality_file("plot/locality_result/lrusc_locality.txt");
+	ofstream my_ref_file("plot/my_ref_result/lrusc_my_ref.txt");
+
+	ofstream rand_int_file("plot/random_int_result/lrusc_int_rand.txt");
+	ofstream locality_int_file("plot/locality_int_result/lrusc_int_locality.txt");
+	ofstream my_ref_int_file("plot/my_ref_int_result/lrusc_int_my_ref.txt");
+
+	ofstream rand_dis_file("plot/random_dis_result/lrusc_dis_rand.txt");
+	ofstream locality_dis_file("plot/locality_dis_result/lrusc_dis_locality.txt");
+	ofstream my_ref_dis_file("plot/my_ref_dis_result/lrusc_dis_my_ref.txt");
+
 	//run each 
 	for (int k = 0; k < 3; k++)
 	{
@@ -111,23 +135,37 @@ void lrusc::run()
 			break;
 		case 2:
 			cout<<endl<<"Bubble sort string:"<<endl;
-			bubble_sort_string3();
+			my_ref_string3();
 		}
+		page_fault = vector<int>(10, 0);
+		interrupt = vector<int>(10, 0);
+		diskIO = vector<int>(10, 0);
 		//run 10,20,30........,100 frames
 		for (int i = 0; i < 10; i++) {
             
             num_frame = 10 * (i + 1);
 
-			if(k==0)
-				rand_file<<num_frame<<" ";
-			else if(k==1)
-				locality_file<<num_frame<<" ";
-			else
-				bubble_sort_file<<num_frame<<" ";
+			switch(k){
+				case 0:
+					rand_file<<num_frame<<" ";
+					rand_int_file<<num_frame<<" ";
+					rand_dis_file<<num_frame<<" ";
+					break;
+				case 1:
+					locality_file<<num_frame<<" ";
+					locality_int_file<<num_frame<<" ";
+					locality_dis_file<<num_frame<<" ";
+					break;
+				case 2:
+					my_ref_file<<num_frame<<" ";
+					my_ref_int_file<<num_frame<<" ";
+					my_ref_dis_file<<num_frame<<" ";
+			}
 
 
 			frame.resize(0);
 			rbit.resize(0);
+			dbit.resize(0);
 			//input page
 			for (int j = 0; j < times; j++) {
 				//check whether page already in frame
@@ -135,22 +173,19 @@ void lrusc::run()
 
 					//check whether frames are filled
 					if (frame.size() == num_frame)
-						change_victim_page(reference_string[j]);
+						change_victim_page(reference_string[j],i);
 					else {
 						frame.push_back(reference_string[j]);
 						rbit.push_back(0);
+
+						double r = (double)rand() / RAND_MAX;
+						if (r < update_pro)
+							dbit.push_back(1);
+						else
+							dbit.push_back(0);
 					}
 					//increase page fault
-					switch (k) {
-					case 0:
-						page_fault1[i]++;
-						break;
-					case 1:
-						page_fault2[i]++;
-						break;
-					case 2:
-						page_fault3[i]++;
-					}
+					page_fault[i]++;
 
 				}			
 				else{
@@ -158,21 +193,34 @@ void lrusc::run()
 						frame.push_back(reference_string[j]);
 						rbit.erase(rbit.begin()+tmp);
 						rbit.push_back(1);
+
+						double r = (double)rand() / RAND_MAX;
+						if (r < update_pro)
+							dbit[tmp]=1;
 				}
 			}
+			interrupt[i]=diskIO[i]+page_fault[i];
+
+			cout << "Frame size:" << num_frame << ": " << page_fault[i] << endl;
+
 			switch (k) {
 			case 0:
-				cout << "Frame size:" << num_frame << ": " << page_fault1[i] << endl;
-				rand_file<<page_fault1[i]<<endl;
+				rand_file<<page_fault[i]<<endl;
+				rand_int_file<<interrupt[i]<<endl;
+				rand_dis_file<<diskIO[i]<<endl;
 				break;
+
 			case 1:
-				cout << "Frame size:" << num_frame << ": " << page_fault2[i] << endl;
-				locality_file<<page_fault2[i]<<endl;
+				locality_file<<page_fault[i]<<endl;
+				locality_int_file<<interrupt[i]<<endl;
+				locality_dis_file<<diskIO[i]<<endl;
 				break;
+
 			case 2:
-				cout << "Frame size:" << num_frame << ": " << page_fault3[i] << endl;
-				bubble_sort_file<<page_fault3[i]<<endl;
-				
+				my_ref_file<<page_fault[i]<<endl;
+				my_ref_int_file<<interrupt[i]<<endl;
+				my_ref_dis_file<<diskIO[i]<<endl;
+
 			}
 
 		}
@@ -181,6 +229,12 @@ void lrusc::run()
 
 rand_file.close();
 locality_file.close();
-bubble_sort_file.close();
+my_ref_file.close();
+rand_int_file.close();
+locality_int_file.close();
+my_ref_int_file.close();
+rand_dis_file.close();
+locality_dis_file.close();
+my_ref_dis_file.close();
 }
 #endif
