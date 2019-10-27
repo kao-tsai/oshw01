@@ -9,8 +9,10 @@
 #include"lrusc.h"
 using namespace std;
 
+//產生random reference string
 void random_string() {
 	srand(time(0));
+	//將字串寫在"random_string.txt"裡
 	ofstream output("random_string.txt");
 	int random_num;
 	int times = 100000;
@@ -21,32 +23,9 @@ void random_string() {
 	}
 	output.close();
 } 
-/*
+//產生locality reference string
 void locality_string2() {
-	ofstream output("locality_string.txt");
-	int times = 100000;
-	int locality_num, start_num,count=0,tmp;
-
-
-	while (count < times) {
-
-		locality_num = rand()%26+25;
-		start_num = rand() % 500;
-
-		for(int i=0;i<locality_num;i++){
-				tmp=start_num+i;
-				if(tmp>500)
-					output<<tmp%500<<" ";
-				else
-					output<<tmp<<" ";
-		}
-		
-		count+=locality_num;
-	}
-	output.close();
-}*/
-
-void locality_string2() {
+	//將字串寫在"locality_string.txt"裡
 	ofstream output("locality_string.txt");
 	int times = 100000;
 	int locality_num, rate, start_num, num_func_calls,random_num,count=0;
@@ -70,51 +49,21 @@ void locality_string2() {
 	output.close();
 
 }
-/*
-void bubble_sort_string(){
-	ofstream output("bubble_sort_string.txt");
-	int sort_size,count=0,times=100000,start_num;
-	while(count<times){
-		sort_size=rand()%30+10;
-		start_num=rand()%500+1;
-		for(int i=0;i<sort_size-1;i++){
-				for(int j=i;j<sort_size-1;j++){
-						if(start_num>500)
-								output <<(start_num+j)%500<<" "<<(start_num+j+1)%500<<" ";
-						else
-								output <<start_num+j<<" "<<start_num+j+1<<" ";
-						count+=2;
-				}
-		}
-	}
-	output.close();
-}*/
-// void selection_sort_string(){
-// 	ofstream output("my_ref_string.txt");
-// 	int sort_size,count=0,times=100000,start_num,tmp;
-// 	while(count<times){
-// 		sort_size=rand()%50+20;
-// 		start_num=rand()%500+1;
-// 		for(int i=0;i<sort_size-1;i++){
-// 				for(int j=i;j<sort_size-1;j++){
-// 						tmp=start_num+j;
-						//   if(tmp>500)
-						// 	      output <<tmp%500<<" ";
-						//   else
-						// 		  output <<tmp<<" ";
-// 						count++;
-// 				}
-// 		}
-// 	}
-// 	output.close();
-// }
-
+//產生my reference string
 void s_selection_sort_string(){
+	//將字串寫在"my_ref_string.txt"裡
 	ofstream output("my_ref_string.txt");
 	int sort_size,count=0,times=100000,start_num,start_num2,tmp;
+	//EXAMPLE:7 6 5 4 1 共5個page做selection sort
+	// 搜尋順序:
+	// 76541
+	// 1456
+	// 654
+	// 45
+	// 5
 	while(count<times){
-		sort_size=rand()%190+50;//50 20
-		start_num=rand()%500+1;//500 1
+		sort_size=rand()%150+50;//200 250
+		start_num=rand()%500+1;
 		start_num2=start_num+sort_size-1;
 		for(int i=0;i<sort_size-1;i++){
 				for(int j=i;j<sort_size;j++){
@@ -126,7 +75,6 @@ void s_selection_sort_string(){
 								output <<tmp%500<<" ";
 						else
 								output <<tmp<<" ";
-
 					}
 					else{
 						
@@ -152,9 +100,6 @@ int main() {
 	s_selection_sort_string();
 	FIFO fifo;
 	op optimal;
-	lru2 lrur2;
-	sc scr;
-	lfu lfur;
 	lrusc lruscr;
 	esc es;
 	cout << "FIFO Algo:" << endl<<endl;
@@ -163,12 +108,6 @@ int main() {
 	optimal.run();
 	cout << endl << "ESC Algo:" << endl << endl;
 	es.run();
-	// cout << endl<< "lru2 Algo:" << endl<< endl;
-	//lrur2.run();
-	// cout << endl<< "sc Algo:" << endl<< endl;
-	// scr.run();
-	// cout << endl<< "LFU Algo:" << endl<< endl;
-	// lfur.run();
 	cout << endl<< "lrusc Algo:" << endl<< endl;
 	lruscr.run();
 	return 0;
